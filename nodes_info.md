@@ -32,12 +32,12 @@
 * change the state change day to immune day(node[day_to_change_state] = immune time)
 
 
-### infaction
+### infection
 * iteration from the node to find node[status] = infected
   * iterate from that node to find the neighbor whose state is healthy
     * give a probability (check if it is is_symptom or not, give different rate) to choose the neighbor to:
       * change the future of the infected neighbor(node[future] = infacted)
-      * change the state change time(node[day_to_change_state] = infaction time)
+      * change the state change time(node[day_to_change_state] = infection time)
 
 ### quit_immune
 * iteration from the node to find node[status] = immune && node[future] = healthy && state change day = 0
@@ -50,6 +50,6 @@
 * recovery()
 * be_infacted()
 * quit_immue()
-* infaction()
+* infection()
 
 

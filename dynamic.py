@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import collections
 
 class Dynamic():
-    def __init__(self, G, immune_time, infect_rate, infect_time, death_rate, death_time, recover_time, begin_infected_number):
+    def __init__(self, G, immune_time, infect_rate, infect_time, death_rate, death_time, recover_time, begin_infected_number, allowed_measures):
         self.G = G
         self.immune_time = immune_time
         self.infect_rate = infect_rate
@@ -15,6 +15,7 @@ class Dynamic():
         self.recover_time = recover_time
         self.death_time = death_time
         self.begin_infected_number = begin_infected_number
+        self.allowed_measures = allowed_measures
 
 
     def init_Graph_state(self):
@@ -51,12 +52,12 @@ class Dynamic():
                 self.G.nodes[node]['future'] = 'healthy'
                 self.G.nodes[node]['day_to_change_state'] = self.immune_time
 
-    def infaction(self):
+    def infection(self):
         for node in self.G.__iter__():
             if self.G.nodes[node]['status'] == 'infected':
                 victim_list = []
                 for neighbor in list(self.G.neighbors(node)):
-                    if self.G.nodes[neighbor]['status'] == 'healthy' and self.G.nodes[neighbor]['future'] == 'healthy':
+                    if self.G.nodes[neighbor]['status'] == 'healthy' and self.G.nodes[neighbor]['future'] == 'healthy' and self.G.get_edge_data(node,neighbor) != self.allowed_measures:
                         victim_list.append(neighbor)
                 destiny = np.random.binomial(1, self.infect_rate, len(victim_list))
                 for i in range(len(destiny)):
@@ -111,7 +112,22 @@ class Dynamic():
         self.death_event()
         self.recovery()
         self.be_infected()
-        self.infaction()
+        self.infection()
 
 
-class limit_social
+'''class limit_social(Dynamic):
+    def __init__(self, G, immune_time, infect_rate, infect_time, death_rate, death_time, recover_time, begin_infected_number):
+         super().__init__(self, G, immune_time, infect_rate, infect_time, death_rate, death_time, recover_time, begin_infected_number)
+    
+    def infection(self):
+        for node in self.G.__iter__():
+            if self.G.nodes[node]['status'] == 'infected':
+                victim_list = []
+                for neighbor in list(self.G.neighbors(node)):
+                    if self.G.nodes[neighbor]['status'] == 'healthy' and self.G.nodes[neighbor]['future'] == 'healthy' and self.G.get_edge_data(node,neighbor) == 'ess_non':
+                        victim_list.append(neighbor)
+                destiny = np.random.binomial(1, self.infect_rate, len(victim_list))
+                for i in range(len(destiny)):
+                    if destiny[i] == 1:
+                        self.G.nodes[victim_list[i]]['future'] = 'infected'
+                        self.G.nodes[victim_list[i]]['day_to_change_state'] = self.infect_time'''
