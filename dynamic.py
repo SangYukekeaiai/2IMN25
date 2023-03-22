@@ -57,7 +57,7 @@ class Dynamic():
             if self.G.nodes[node]['status'] == 'infected':
                 victim_list = []
                 for neighbor in list(self.G.neighbors(node)):
-                    if self.G.nodes[neighbor]['status'] == 'healthy' and self.G.nodes[neighbor]['future'] == 'healthy' and self.G.get_edge_data(node,neighbor) != self.allowed_measures:
+                    if self.G.nodes[neighbor]['status'] == 'healthy' and self.G.nodes[neighbor]['future'] == 'healthy' and self.G[node][neighbor]['relation'] != self.allowed_measures:
                         victim_list.append(neighbor)
                 destiny = np.random.binomial(1, self.infect_rate, len(victim_list))
                 for i in range(len(destiny)):
