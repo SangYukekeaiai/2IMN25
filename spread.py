@@ -200,6 +200,8 @@ class Spread_Net():
 				else:
 					tval = self.trans_asymp
 				neighbors = list(self.G.neighbors(n))
+				
+
 				if is_lockdown:
 					vulnerable = []
 					for neigh in neighbors:
@@ -208,6 +210,8 @@ class Spread_Net():
 				else:
 					vulnerable = neighbors
 				#separate essential and non-essential neighbors for symptomatic patients
+
+
 				k = len(vulnerable)
 				essential_vulnerable = []
 				non_ess_vul = []
@@ -233,6 +237,8 @@ class Spread_Net():
 					affected_noness = random.sample(non_ess_vul, int(round(ess_factor*len(non_ess_vul))))
 				else:
 					affected_noness = []
+					
+                
 				if self.G.nodes[n]['symptoms']:
 					affected_neighbors = affected_noness+affected_ess
 				else:
