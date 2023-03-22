@@ -60,7 +60,7 @@ class Social_Net():
 		for pair in list(BAG.edges()):
 			self.G.add_edge(working_nodes[pair[0]],
 			                working_nodes[pair[1]], lockdown=False)
-			self.G[working_nodes[pair[0]]][working_nodes[pair[1]]]['relation'] = 'non_non'
+			self.G[working_nodes[pair[0]]][working_nodes[pair[1]]]['relation'] = 'work'
 		#print 'Printing edges of the workplace BA network'
 		#print BAG.edges()
 		return None
@@ -86,7 +86,7 @@ class Social_Net():
 			self.G.add_edge(essential_nodes[pair[0]],
 			                essential_nodes[pair[1]], lockdown=True)
 			self.G[essential_nodes[pair[0]]
-          ][essential_nodes[pair[1]]]['relation'] = 'ess_ess'
+          ][essential_nodes[pair[1]]]['relation'] = 'essential'
 		#print 'Printing edges of the workplace random network'
 		#print ER.edges()
 
@@ -121,7 +121,7 @@ class Social_Net():
 		print('Social interaction will add', len(select), 'edges')
 		for i, j in select:
 			self.G.add_edge(i, j, lockdown=False)
-			self.G[i][j]['relation'] = 'soical'
+			self.G[i][j]['relation'] = 'social'
 			socG.add_edge(i, j)
 		# print('Social!')
 		# self.degree_histogram(G=socG, hist_file='soc_hist.png',
