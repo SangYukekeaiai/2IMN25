@@ -6,8 +6,6 @@
 |       future        |        infected, dead, healthy, immune        |
 | day_to_change_state | number of the day till recover from the virus |
 |     is_symptom      |                 true or false                 |
-|    is_essential     |                 true or false                 |
-|     is_blocked      |                 true or false                 |
 
 ### state changing graph
 * Death: Death
@@ -39,6 +37,8 @@
       * change the future of the infected neighbor(node[future] = infacted)
       * change the state change time(node[day_to_change_state] = infection time)
 
+### be infacted
+* 
 ### quit_immune
 * iteration from the node to find node[status] = immune && node[future] = healthy && state change day = 0
 * assign the node[status] = healthy, node[future] = healthy, state change day = 0(node[day_to_change_state] = 0)

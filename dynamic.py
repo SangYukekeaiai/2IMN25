@@ -24,7 +24,7 @@ class Dynamic():
         for n in self.G.nodes():
             if n in infected:
                 self.G.nodes[n]['status'] = 'infected'
-                self.G.nodes[n]['day_to_change_state'] = self.immune_time
+                self.G.nodes[n]['day_to_change_state'] = self.recover_time
                 self.G.nodes[n]['future'] = 'immune'
             else:
                 self.G.nodes[n]['status'] = 'healthy'
@@ -40,7 +40,7 @@ class Dynamic():
 
     def death_event(self):
         for node in self.G.__iter__():
-            if self.G.nodes[node]['status'] != 'infected' and (
+            if self.G.nodes[node]['status'] == 'infected' and (
                 self.G.nodes[node]['future'] == 'death' and self.G.nodes[node]['day_to_change_state'] == 0):
                 self.G.nodes[node]['status'] = 'death'
 
@@ -89,28 +89,39 @@ class Dynamic():
 
     def record_print(self):
         death_nodes = []
+        dead_num = 0
         infected_nodes = []
+        inf_num = 0
         recovered_nodes = []
+        recover_num = 0
         healthy_nodes = []
+        healthy_num = 0
         for node in self.G.__iter__():
             if self.G.nodes[node]['status'] == 'immune':
                 recovered_nodes.append(node)
+                # recover_num += 1
             if self.G.nodes[node]['status'] == 'healthy':
                 healthy_nodes.append(node)
+                # healthy_num += 1
             if self.G.nodes[node]['status'] == 'death':
                 death_nodes.append(node)
             if self.G.nodes[node]['status'] == 'infected':
                 infected_nodes.append(node)
-        print("death node:", death_nodes)
-        print("infected node:", infected_nodes)
-        print("recovered node:", recovered_nodes)
-        print("healthy node:", healthy_nodes)
+        # print("death node:", death_nodes)
+        print("death number:", len(death_nodes))
+        # print("infected node:", infected_nodes)
+        print("infected number:", len(infected_nodes))
+        # print("recovered node:", recovered_nodes)
+        print("recovered number:", len(recovered_nodes))
+        # print("healthy node:", healthy_nodes)
+        print("healthy number:", len(healthy_nodes))
 
 
     def dayrun(self):
         self.updat_time()
         self.death_event()
         self.recovery()
+        self.quit_immune()
         self.be_infected()
         self.infection()
 

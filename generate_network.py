@@ -180,17 +180,17 @@ class Social_Net():
 		pos = nx.circular_layout(self.G)
 		family, social, ess_ess, ess_non, non_non = [], [], [], [], []
 		for i, j in self.G.edges:
-			if G[i][j]['relation'] == 'family':
+			if self.G[i][j]['relation'] == 'family':
 				family.append((i, j))
-			if G[i][j]['relation'] == 'social':
+			if self.G[i][j]['relation'] == 'social':
 				social.append((i, j))
-			if G[i][j]['relation'] == 'ess_ess':
+			if self.G[i][j]['relation'] == 'ess_ess':
 				ess_ess.append((i, j))
-			if G[i][j]['relation'] == 'ess_non':
+			if self.G[i][j]['relation'] == 'ess_non':
 				ess_non.append((i, j))
-			if G[i][j]['relation'] == 'non_non':
+			if self.G[i][j]['relation'] == 'non_non':
 				non_non.append((i, j))
-		nx.draw(G, pos, with_labels=True, font_weight='bold', node_size=200)
+		nx.draw(self.G, pos, with_labels=True, font_weight='bold', node_size=200)
 		nx.draw_networkx_edges(G=self.G, pos=pos, width=2.0,
 		                       edgelist=family, edge_color='green')
 		nx.draw_networkx_edges(G=self.G, pos=pos, edgelist=ess_ess, edge_color='red')
