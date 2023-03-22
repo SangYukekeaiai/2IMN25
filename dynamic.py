@@ -114,3 +114,4 @@ class Dynamic():
         self.infaction()
 
 
+class limit_social

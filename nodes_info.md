@@ -21,7 +21,7 @@
   * if node[status] != death && node[day_to_change_state] != 0, node[day_to_change_state]--
 
 
-### death from the infaction status
+### death from the infection status
 * iteration from the node to find node[status] = infected && node[future] = death && state change day = 0
 * change the status to dead
 

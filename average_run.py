@@ -7,11 +7,11 @@ import statistics
 
 #graphs x runs will be the number of simulations. And the results will be on the average of those
 graphs = 5
-runs = 10
+runs = 1
 #number of days each simulation will run for
 ndays = 120
 #number of nodes in the network
-N = 10000
+N = 100
 
 avgdict = {'healthy':[0 for i in range(ndays)], 'immune':[0 for i in range(ndays)], 'total':[0 for i in range(ndays)], 'infected':[0 for i in range(ndays)], 'dead':[0 for i in range(ndays)], 'repno':[0 for i in range(ndays)]}
 
