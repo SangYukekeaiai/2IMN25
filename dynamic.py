@@ -15,6 +15,19 @@ class Dynamic():
         self.recover_time = recover_time
         self.death_time = death_time
         self.begin_infected_number = begin_infected_number
+        self.death_list = [0.0024, 0.0037, 0.0081, 0.0159, 0.0285, 0.0465, 0.0686, 0.0918, 0.1116, 0.1229, 0.1229, 0.1116, 0.0918, 0.0686, 0.0465, 0.0285, 0.0159, 0.0081, 0.0037, 0.0024]
+        self.recover_list = [0.0002, 0.0005, 0.0009, 0.0016, 0.0028, 0.0047, 0.0076, 0.0117, 0.0173, 0.0245, 0.0332, 0.0431, 0.0536, 0.0637, 0.0726, 0.0792, 0.0828, 0.0827, 0.0792, 0.0726, 0.0637, 0.0536, 0.0431, 0.0332, 0.0245, 0.0173, 0.0117, 0.0076, 0.0047, 0.0028, 0.0016, 0.0009, 0.0005, 0.0002, 0.0001]
+      
+        mu = 5.6
+        sigma = (14 - 2) / 6
+
+        # Generate the x values from 2 to 14
+        x = np.arange(2, 14)
+        probs = 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((x - mu) / sigma)**2)
+        probs /= np.sum(probs)
+        self.to_be_infected_list = list(probs)
+        print(self.to_be_infected_list)
+
 
 
     def init_Graph_state(self):
@@ -62,7 +75,7 @@ class Dynamic():
                 for i in range(len(destiny)):
                     if destiny[i] == 1:
                         self.G.nodes[victim_list[i]]['future'] = 'infected'
-                        self.G.nodes[victim_list[i]]['day_to_change_state'] = self.infect_time
+                        self.G.nodes[victim_list[i]]['day_to_change_state'] = np.random.choice(np.arange(2,14), p = self.to_be_infected_list)
 
     def be_infected(self):
         for node in self.G.__iter__():
@@ -72,10 +85,10 @@ class Dynamic():
                 destiny = np.random.choice(np.arange(0, 2), p=[1-self.death_rate, self.death_rate])
                 if destiny:
                     self.G.nodes[node]['future'] = 'death'
-                    self.G.nodes[node]['day_to_change_state'] = self.death_time
+                    self.G.nodes[node]['day_to_change_state'] = np.random.choice(np.arange(5,25), p = self.death_list)
                 else:
                     self.G.nodes[node]['future'] = 'immune'
-                    self.G.nodes[node]['day_to_change_state'] = self.recover_time
+                    self.G.nodes[node]['day_to_change_state'] = np.random.choice(np.arange(1,36), p = self.recover_list)
 
 
     def quit_immune(self):

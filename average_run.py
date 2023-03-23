@@ -9,7 +9,7 @@ import statistics
 graphs = 5
 runs = 10
 #number of days each simulation will run for
-ndays = 120
+ndays = 180
 #number of nodes in the network
 N = 10000
 
@@ -43,7 +43,7 @@ for graphno in range(graphs):
 
 		#run the spread on this graph
 		spreading = Spread_Net(G=G, setval=True)
-		datadict = spreading.many_dayrun(num_days=ndays, curve=False)
+		datadict = spreading.many_dayrun(num_days=ndays, curve=False, lockstart = 20, lockend= 40)
 		#repdict = spreading.reproduction_number(givedata=False)
 		#print 'datadict', datadict
 		for k in datadict.keys():

@@ -6,7 +6,7 @@ import json
 import math
 import statistics
 
-class Spread_Net():
+class Spread_Network():
 	def __init__(self, G, infected_init=5, setval=True):
 		#initialize the spreading for given network G
 		#nodes of G must have attributes working and is_essential and edges of G must have attribute lockdown
@@ -33,7 +33,7 @@ class Spread_Net():
 			self.set_parameters()
 		#print 'Spread initialized. Run daily spread functions to continue the spread'
 
-	def many_dayrun(self, num_days, lockstart=None, lockend=None, postlock=False, complete_norm=None, curve=False, img_file='temp.png', datafile='temp.json'):
+	def many_day_run(self, num_days, lockstart=None, lockend=None, postlock=False, complete_norm=None, curve=False, img_file='temp.png', datafile='temp.json'):
 		self.complete_norm = complete_norm
 		self.lockend = lockend
 		#self.set_parameters()
@@ -343,9 +343,6 @@ class Spread_Net():
 		#the following variables are hardfixed
 		#death list is picked from a gaussian around 14. ranges from 5 days to 24 days.
 		self.death_list = [0.0024, 0.0037, 0.0081, 0.0159, 0.0285, 0.0465, 0.0686, 0.0918, 0.1116, 0.1229, 0.1229, 0.1116, 0.0918, 0.0686, 0.0465, 0.0285, 0.0159, 0.0081, 0.0037, 0.0024]
-		#death_list = [1, 1.5, 4.5, 6, 8, 10, 12, 14, 12, 10, 8, 6, 4.5, 1.5, 1]
-		#self.death_dist = {i+7:death_list[i] for i in range(len(death_list))}
-		#recover list is picked from a gaussian distribution around 17. Recovery ranges from 1 day to 35 days.
 		self.recover_list = [0.0002, 0.0005, 0.0009, 0.0016, 0.0028, 0.0047, 0.0076, 0.0117, 0.0173, 0.0245, 0.0332, 0.0431, 0.0536, 0.0637, 0.0726, 0.0792, 0.0828, 0.0827, 0.0792, 0.0726, 0.0637, 0.0536, 0.0431, 0.0332, 0.0245, 0.0173, 0.0117, 0.0076, 0.0047, 0.0028, 0.0016, 0.0009, 0.0005, 0.0002, 0.0001]
 
 	def return_parameters(self):
