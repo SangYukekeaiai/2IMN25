@@ -1,12 +1,12 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 from dynamic import Dynamic
-from generate_network import Social_Network
+from generate_network import Social_Net
 import time
 
-SN = Social_Network(complete=False)
+SN = Social_Net(complete=False)
 SN.set_parameters(ba_degree=2, social_prob=0.025, rand_degree=25)
-SN.setup_network(5000)
+SN.start_network(5000)
 G = SN.get_graph()
 # SN.draw_graph()
 

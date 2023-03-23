@@ -16,7 +16,7 @@ class Social_Net():
 		else:
 			pass
 
-	def setup_network(self, n):
+	def start_network(self, n):
 		self.family_graph(n, self.G)
 		self.workplace_BA()
 		self.workplace_random()

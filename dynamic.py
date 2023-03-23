@@ -15,19 +15,6 @@ class Dynamic():
         self.recover_time = recover_time
         self.death_time = death_time
         self.begin_infected_number = begin_infected_number
-        self.death_list = [0.0024, 0.0037, 0.0081, 0.0159, 0.0285, 0.0465, 0.0686, 0.0918, 0.1116, 0.1229, 0.1229, 0.1116, 0.0918, 0.0686, 0.0465, 0.0285, 0.0159, 0.0081, 0.0037, 0.0024]
-        self.recover_list = [0.0002, 0.0005, 0.0009, 0.0016, 0.0028, 0.0047, 0.0076, 0.0117, 0.0173, 0.0245, 0.0332, 0.0431, 0.0536, 0.0637, 0.0726, 0.0792, 0.0828, 0.0827, 0.0792, 0.0726, 0.0637, 0.0536, 0.0431, 0.0332, 0.0245, 0.0173, 0.0117, 0.0076, 0.0047, 0.0028, 0.0016, 0.0009, 0.0005, 0.0002, 0.0001]
-      
-        mu = 5.6
-        sigma = (14 - 2) / 6
-
-        # Generate the x values from 2 to 14
-        x = np.arange(2, 14)
-        probs = 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((x - mu) / sigma)**2)
-        probs /= np.sum(probs)
-        self.to_be_infected_list = list(probs)
-        print(self.to_be_infected_list)
-
 
 
     def init_Graph_state(self):
@@ -36,7 +23,7 @@ class Dynamic():
         for n in self.G.nodes():
             if n in infected:
                 self.G.nodes[n]['status'] = 'infected'
-                self.G.nodes[n]['day_to_change_state'] = self.recover_time
+                self.G.nodes[n]['day_to_change_state'] = self.immune_time
                 self.G.nodes[n]['future'] = 'immune'
             else:
                 self.G.nodes[n]['status'] = 'healthy'
@@ -48,11 +35,11 @@ class Dynamic():
     def updat_time(self):
         for node in self.G.__iter__():
             if self.G.nodes[node]['status'] != 'death' and self.G.nodes[node]['day_to_change_state'] != 0:
-                self.G.nodes[node]['day_to_change_state'] -= 1
+                self.G.nodes[node]['day_to_changegit_state'] -= 1
 
     def death_event(self):
         for node in self.G.__iter__():
-            if self.G.nodes[node]['status'] == 'infected' and (
+            if self.G.nodes[node]['status'] != 'infected' and (
                 self.G.nodes[node]['future'] == 'death' and self.G.nodes[node]['day_to_change_state'] == 0):
                 self.G.nodes[node]['status'] = 'death'
 
@@ -75,7 +62,7 @@ class Dynamic():
                 for i in range(len(destiny)):
                     if destiny[i] == 1:
                         self.G.nodes[victim_list[i]]['future'] = 'infected'
-                        self.G.nodes[victim_list[i]]['day_to_change_state'] = np.random.choice(np.arange(2,14), p = self.to_be_infected_list)
+                        self.G.nodes[victim_list[i]]['day_to_change_state'] = self.infect_time
 
     def be_infected(self):
         for node in self.G.__iter__():
@@ -85,10 +72,10 @@ class Dynamic():
                 destiny = np.random.choice(np.arange(0, 2), p=[1-self.death_rate, self.death_rate])
                 if destiny:
                     self.G.nodes[node]['future'] = 'death'
-                    self.G.nodes[node]['day_to_change_state'] = np.random.choice(np.arange(5,25), p = self.death_list)
+                    self.G.nodes[node]['day_to_change_state'] = self.death_time
                 else:
                     self.G.nodes[node]['future'] = 'immune'
-                    self.G.nodes[node]['day_to_change_state'] = np.random.choice(np.arange(1,36), p = self.recover_list)
+                    self.G.nodes[node]['day_to_change_state'] = self.recover_time
 
 
     def quit_immune(self):
@@ -101,65 +88,28 @@ class Dynamic():
 
     def record_print(self):
         death_nodes = []
-        death_num = 0
         infected_nodes = []
-        infected_num = 0
         recovered_nodes = []
-        recover_num = 0
         healthy_nodes = []
-        healthy_num = 0
         for node in self.G.__iter__():
             if self.G.nodes[node]['status'] == 'immune':
                 recovered_nodes.append(node)
-                recover_num += 1
             if self.G.nodes[node]['status'] == 'healthy':
                 healthy_nodes.append(node)
-                healthy_num += 1
             if self.G.nodes[node]['status'] == 'death':
                 death_nodes.append(node)
-                death_num += 1
             if self.G.nodes[node]['status'] == 'infected':
                 infected_nodes.append(node)
-                infected_num += 1
-        # print("death node:", death_nodes)
-        # print("death number:", len(death_nodes))
-        # print("infected node:", infected_nodes)
-        # print("infected number:", len(infected_nodes))
-        # print("recovered node:", recovered_nodes)
-        # print("recovered number:", len(recovered_nodes))
-        # print("healthy node:", healthy_nodes)
-        # print("healthy number:", len(healthy_nodes))
-        return [recover_num, healthy_num, death_num, infected_num]
-    
-
-    def draw_distribution(self, times):
-        self.death_num_list = []
-        self.recovered_num_list = []
-        self.infected_num_list = []
-        self.healthy_num_list = []
-        self.time_list = []
-        for i in range(times):
-            self.dayrun()
-            recover_num, healthy_num, death_num, infected_num = self.record_print()
-            self.death_num_list.append(death_num)
-            self.recovered_num_list.append(recover_num)
-            self.infected_num_list.append(infected_num)
-            self.healthy_num_list.append(healthy_num)
-            self.time_list.append(i)
-
-        plt.plot(self.time_list, self.death_num_list,
-                 'r', self.time_list, self.death_num_list, 'b', self.time_list, self.infected_num_list, 'g', self.time_list, self.healthy_num_list, 'o')
-        plt.show()
-
-        
-        
+        print("death node:", death_nodes)
+        print("infected node:", infected_nodes)
+        print("recovered node:", recovered_nodes)
+        print("healthy node:", healthy_nodes)
 
 
     def dayrun(self):
         self.updat_time()
         self.death_event()
         self.recovery()
-        self.quit_immune()
         self.be_infected()
         self.infaction()
 
