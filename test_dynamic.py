@@ -10,7 +10,7 @@ SN.start_network(5000)
 G = SN.return_graph()
 # SN.draw_graph()
 
-spread = Dynamic(G=G, immune_time=5, infect_rate=0.2, infect_time=14, death_rate=0.01, death_time=14, recover_time=14, begin_infected_number=5)
+spread = Dynamic(G=G, immune_time=0, infect_rate=0.2, infect_time=14, death_rate=0.01, death_time=14, recover_time=14, begin_infected_number=5)
 
 spread.init_Graph_state()
 
@@ -19,4 +19,4 @@ spread.init_Graph_state()
 #     spread.dayrun()
 #     spread.record_print()
 
-spread.draw_distribution(1000)
+spread.draw_distribution(500)

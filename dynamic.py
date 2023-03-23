@@ -134,8 +134,11 @@ class Dynamic():
             self.healthy_num_list.append(healthy_num)
             self.time_list.append(i)
 
-        plt.plot(self.time_list, self.death_num_list,
-                 'r', self.time_list, self.death_num_list, 'b', self.time_list, self.infected_num_list, 'g', self.time_list, self.healthy_num_list, 'o')
+        plt.plot(self.time_list, self.death_num_list, label='death')
+        plt.plot(self.time_list, self.recovered_num_list, label='immune')
+        plt.plot(self.time_list, self.infected_num_list, label='infected')
+        plt.plot(self.time_list, self.healthy_num_list, label='healthy')
+        plt.legend()
         plt.show()
 
         
