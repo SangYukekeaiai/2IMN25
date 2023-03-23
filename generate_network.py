@@ -102,7 +102,7 @@ class Social_Network():
 		select = random.sample(allpairs, k=int(self.social_prob*len(allpairs)))
 		for i, j in select:
 			self.G.add_edge(i, j, lockdown=False)
-			self.G[i][j]['relation'] = 'soical'
+			self.G[i][j]['relation'] = 'social'
 			socG.add_edge(i, j)
 
 	def set_parameters(self, family_sizes=[0.3, 0.35, 0.18, 0.17], workrate=0.7, essential=0.2, ba_degree=3, essential_connection=0.6, interaction_prob=0.20, social_prob=0.001, rand_degree=5):
