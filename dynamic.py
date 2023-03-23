@@ -89,9 +89,9 @@ class Dynamic():
 
     def record_print(self):
         death_nodes = []
-        dead_num = 0
+        death_num = 0
         infected_nodes = []
-        inf_num = 0
+        infected_num = 0
         recovered_nodes = []
         recover_num = 0
         healthy_nodes = []
@@ -99,22 +99,51 @@ class Dynamic():
         for node in self.G.__iter__():
             if self.G.nodes[node]['status'] == 'immune':
                 recovered_nodes.append(node)
-                # recover_num += 1
+                recover_num += 1
             if self.G.nodes[node]['status'] == 'healthy':
                 healthy_nodes.append(node)
-                # healthy_num += 1
+                healthy_num += 1
             if self.G.nodes[node]['status'] == 'death':
                 death_nodes.append(node)
+                death_num += 1
             if self.G.nodes[node]['status'] == 'infected':
                 infected_nodes.append(node)
+                infected_num += 1
         # print("death node:", death_nodes)
-        print("death number:", len(death_nodes))
+        # print("death number:", len(death_nodes))
         # print("infected node:", infected_nodes)
-        print("infected number:", len(infected_nodes))
+        # print("infected number:", len(infected_nodes))
         # print("recovered node:", recovered_nodes)
-        print("recovered number:", len(recovered_nodes))
+        # print("recovered number:", len(recovered_nodes))
         # print("healthy node:", healthy_nodes)
-        print("healthy number:", len(healthy_nodes))
+        # print("healthy number:", len(healthy_nodes))
+        return [recover_num, healthy_num, death_num, infected_num]
+    
+
+    def draw_distribution(self, times):
+        self.death_num_list = []
+        self.recovered_num_list = []
+        self.infected_num_list = []
+        self.healthy_num_list = []
+        self.time_list = []
+        for i in range(times):
+            self.dayrun()
+            recover_num, healthy_num, death_num, infected_num = self.record_print()
+            self.death_num_list.append(death_num)
+            self.recovered_num_list.append(recover_num)
+            self.infected_num_list.append(infected_num)
+            self.healthy_num_list.append(healthy_num)
+            self.time_list.append(i)
+
+        plt.plot(self.time_list, self.death_num_list, label='death')
+        plt.plot(self.time_list, self.recovered_num_list, label='immune')
+        plt.plot(self.time_list, self.infected_num_list, label='infected')
+        plt.plot(self.time_list, self.healthy_num_list, label='healthy')
+        plt.legend()
+        plt.show()
+
+        
+        
 
 
     def dayrun(self):
