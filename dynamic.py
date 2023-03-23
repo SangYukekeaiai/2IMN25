@@ -6,15 +6,28 @@ import matplotlib.pyplot as plt
 import collections
 
 class Dynamic():
-    def __init__(self, G, immune_time, infect_rate, infect_time, death_rate, death_time, recover_time, begin_infected_number):
+    def __init__(self, G, immune_time, infect_rate, infect_time, death_rate, lockdown_start, lockdown_stop, begin_infected_number, allowed_measures):
         self.G = G
         self.immune_time = immune_time
         self.infect_rate = infect_rate
         self.infect_time = infect_time
         self.death_rate = death_rate
-        self.recover_time = recover_time
-        self.death_time = death_time
+        self.lockdown_stop = lockdown_stop
+        self.lockdown_start = lockdown_start
         self.begin_infected_number = begin_infected_number
+        self.death_list = [0.0024, 0.0037, 0.0081, 0.0159, 0.0285, 0.0465, 0.0686, 0.0918, 0.1116, 0.1229, 0.1229, 0.1116, 0.0918, 0.0686, 0.0465, 0.0285, 0.0159, 0.0081, 0.0037, 0.0024]
+        self.recover_list = [0.0002, 0.0005, 0.0009, 0.0016, 0.0028, 0.0047, 0.0076, 0.0117, 0.0173, 0.0245, 0.0332, 0.0431, 0.0536, 0.0637, 0.0726, 0.0792, 0.0828, 0.0827, 0.0792, 0.0726, 0.0637, 0.0536, 0.0431, 0.0332, 0.0245, 0.0173, 0.0117, 0.0076, 0.0047, 0.0028, 0.0016, 0.0009, 0.0005, 0.0002, 0.0001]
+        self.allowed_measures = allowed_measures
+        self.time = 0
+        mu = 5.6
+        sigma = (14 - 2) / 6
+
+        # Generate the x values from 2 to 14
+        x = np.arange(2, 14)
+        probs = 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((x - mu) / sigma)**2)
+        probs /= np.sum(probs)
+        self.to_be_infected_list = list(probs)
+
 
 
     def init_Graph_state(self):
@@ -23,7 +36,7 @@ class Dynamic():
         for n in self.G.nodes():
             if n in infected:
                 self.G.nodes[n]['status'] = 'infected'
-                self.G.nodes[n]['day_to_change_state'] = self.recover_time
+                self.G.nodes[n]['day_to_change_state'] = np.random.choice(np.arange(1,36), p = self.recover_list)
                 self.G.nodes[n]['future'] = 'immune'
             else:
                 self.G.nodes[n]['status'] = 'healthy'
@@ -57,12 +70,16 @@ class Dynamic():
                 victim_list = []
                 for neighbor in list(self.G.neighbors(node)):
                     if self.G.nodes[neighbor]['status'] == 'healthy' and self.G.nodes[neighbor]['future'] == 'healthy':
-                        victim_list.append(neighbor)
+                        if self.time >self.lockdown_start and self.time<self.lockdown_stop:
+                            if self.G[node][neighbor]['relation'] == self.allowed_measures:
+                                victim_list.append(neighbor)                            
+                        else:
+                            victim_list.append(neighbor)
                 destiny = np.random.binomial(1, self.infect_rate, len(victim_list))
                 for i in range(len(destiny)):
                     if destiny[i] == 1:
                         self.G.nodes[victim_list[i]]['future'] = 'infected'
-                        self.G.nodes[victim_list[i]]['day_to_change_state'] = self.infect_time
+                        self.G.nodes[victim_list[i]]['day_to_change_state'] = np.random.choice(np.arange(2,14), p = self.to_be_infected_list)
 
     def be_infected(self):
         for node in self.G.__iter__():
@@ -72,10 +89,10 @@ class Dynamic():
                 destiny = np.random.choice(np.arange(0, 2), p=[1-self.death_rate, self.death_rate])
                 if destiny:
                     self.G.nodes[node]['future'] = 'death'
-                    self.G.nodes[node]['day_to_change_state'] = self.death_time
+                    self.G.nodes[node]['day_to_change_state'] = np.random.choice(np.arange(5,25), p = self.death_list)
                 else:
                     self.G.nodes[node]['future'] = 'immune'
-                    self.G.nodes[node]['day_to_change_state'] = self.recover_time
+                    self.G.nodes[node]['day_to_change_state'] = np.random.choice(np.arange(1,36), p = self.recover_list)
 
 
     def quit_immune(self):
@@ -133,14 +150,17 @@ class Dynamic():
             self.infected_num_list.append(infected_num)
             self.healthy_num_list.append(healthy_num)
             self.time_list.append(i)
-
-        plt.plot(self.time_list, self.death_num_list, label='death')
-        plt.plot(self.time_list, self.recovered_num_list, label='immune')
-        plt.plot(self.time_list, self.infected_num_list, label='infected')
-        plt.plot(self.time_list, self.healthy_num_list, label='healthy')
-        plt.legend()
-        plt.show()
-
+            self.time = i
+        fig, ax = plt.subplots()
+        ax.plot(self.time_list, self.death_num_list, label='death')
+        ax.plot(self.time_list, self.recovered_num_list, label='immune')
+        ax.plot(self.time_list, self.infected_num_list, label='infected')
+        ax.plot(self.time_list, self.healthy_num_list, label='healthy')
+        ax.legend()
+        plt.xlabel("Days")
+        plt.ylabel("number of people")
+        plt.savefig('figure.png', dpi=500)
+        plt.close()
         
         
 

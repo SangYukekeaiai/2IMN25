@@ -6,24 +6,18 @@ import matplotlib.pyplot as plt
 import collections
 
 
-class Social_Net():
+class Social_Network():
 
-	def __init__(self, complete_net=False, n=1000):
+	def __init__(self, complete=False, n=1000):
 		#initializes the graph and sets the parameters to default
 		self.G = nx.Graph()
 		self.set_parameters()
-		if complete_net:
-			self.start_network(n)
-			#self.workplace_BA()
-			#self.workplace_random()
-			#self.interaction()
-			#self.social()
-			#print 'Classic network of size', n, 'created'
+		if complete:
+			self.setup_network(n)
 		else:
-			#print 'Network initialized. Please use function start_network to make the network'
 			pass
 
-	def start_network(self, n):
+	def setup_network(self, n):
 		self.family_graph(n, self.G)
 		self.workplace_BA()
 		self.workplace_random()
@@ -31,7 +25,7 @@ class Social_Net():
 		self.social()
 		#print 'Graph constructed'
 
-	def return_graph(self):
+	def get_graph(self):
 		return self.G
 
 	def family_graph(self, n, G):
@@ -73,22 +67,14 @@ class Social_Net():
 			if self.G.nodes[n]['essential']:
 				n_ess += 1
 				essential_nodes.append(n)
-		#print 'Number of essential people is', n_ess
-		#ER = nx.erdos_renyi_graph(n_ess, self.essential_connection)
 		m = int(float(n_ess*self.rand_degree)/2)
 		# print('m is', m)
 		ER = nx.gnm_random_graph(n_ess, m)
-		# print('Workplace Random!')
-		# self.degree_histogram(G=ER, hist_file='workRand_hist.png',
-		#                       loglog_file='workRand_log.png')
-		#map the ER to the actual network edges
 		for pair in list(ER.edges()):
 			self.G.add_edge(essential_nodes[pair[0]],
 			                essential_nodes[pair[1]], lockdown=True)
 			self.G[essential_nodes[pair[0]]
           ][essential_nodes[pair[1]]]['relation'] = 'ess_ess'
-		#print 'Printing edges of the workplace random network'
-		#print ER.edges()
 
 	def interaction(self):
 		#add edges that represent interactions of everyone with essential workers
@@ -108,24 +94,16 @@ class Social_Net():
 				self.G[n][m]['relation'] = 'ess_non'
 				newG.add_edge(n, m)
 
-		# print('interaction!')
-		# self.degree_histogram(G=newG, hist_file='inter_hist.png',
-		#                       loglog_file='inter_log.png')
-
 	def social(self):
 		socG = nx.Graph()
 		socG.add_nodes_from([i for i in range(len(self.G.nodes()))])
 		allnodes = self.G.nodes()
 		allpairs = list(it.combinations(allnodes, 2))
 		select = random.sample(allpairs, k=int(self.social_prob*len(allpairs)))
-		print('Social interaction will add', len(select), 'edges')
 		for i, j in select:
 			self.G.add_edge(i, j, lockdown=False)
-			self.G[i][j]['relation'] = 'soical'
+			self.G[i][j]['relation'] = 'social'
 			socG.add_edge(i, j)
-		# print('Social!')
-		# self.degree_histogram(G=socG, hist_file='soc_hist.png',
-		#                       loglog_file='soc_log.png')
 
 	def set_parameters(self, family_sizes=[0.3, 0.35, 0.18, 0.17], workrate=0.7, essential=0.2, ba_degree=3, essential_connection=0.6, interaction_prob=0.20, social_prob=0.001, rand_degree=5):
 		self.workrate = workrate
@@ -246,19 +224,9 @@ class Social_Net():
 
 
 if __name__ == '__main__':
-	My = Social_Net(complete_net=False)
+	My = Social_Network(complete=False)
 	My.set_parameters(ba_degree=2, social_prob=0.25, rand_degree=25)
-	My.start_network(100)
-	#My.workplace_BA()
-	#My.workplace_random()
-	#My.interaction()
-	#My.social()
+	My.setup_network(100)
 	G = My.return_graph()
-	# print('Overall')
-	# My.degree_histogram(loglog_file='temp_log.png')
-	#print G.nodes(data=True)
-	#print G.edges()
 	My.draw_graph()
-	# nx.draw(G, node_size=10)
-	# plt.show()
 	nx.write_graphml(G, 'tenk_net.graphml')
