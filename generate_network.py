@@ -16,7 +16,7 @@ class Social_Net():
 		else:
 			pass
 
-	def start_network(self, n):
+	def setup_network(self, n):
 		self.family_graph(n, self.G)
 		self.workplace_BA()
 		self.workplace_random()
@@ -24,7 +24,7 @@ class Social_Net():
 		self.social()
 		#print 'Graph constructed'
 
-	def return_graph(self):
+	def get_graph(self):
 		return self.G
 
 	def family_graph(self, n, G):
@@ -60,7 +60,7 @@ class Social_Net():
 			self.G.add_edge(essential_nodes[pair[0]],
 			                essential_nodes[pair[1]], lockdown=True)
 			self.G[essential_nodes[pair[0]]
-          ][essential_nodes[pair[1]]]['relation'] = 'essential'
+          ][essential_nodes[pair[1]]]['relation'] = 'ess_ess'
 
 	def interaction(self):
 		newG = nx.Graph()
@@ -78,6 +78,7 @@ class Social_Net():
 				self.G.add_edge(n, m, lockdown=True)
 				self.G[n][m]['relation'] = 'ess_non'
 				newG.add_edge(n, m)
+
 				
 	def social(self):
 		socG = nx.Graph()
@@ -85,12 +86,11 @@ class Social_Net():
 		allnodes = self.G.nodes()
 		allpairs = list(it.combinations(allnodes, 2))
 		select = random.sample(allpairs, k=int(self.social_prob*len(allpairs)))
-		print('Social interaction will add', len(select), 'edges')
 		for i, j in select:
 			self.G.add_edge(i, j, lockdown=False)
 			self.G[i][j]['relation'] = 'social'
 			socG.add_edge(i, j)
-			
+
 	def set_parameters(self, family_sizes=[0.3, 0.35, 0.18, 0.17], workrate=0.7, essential=0.2, ba_degree=3, essential_connection=0.6, interaction_prob=0.20, social_prob=0.001, rand_degree=5):
 		self.workrate = workrate
 		self.essential = essential
@@ -138,17 +138,17 @@ class Social_Net():
 		pos = nx.circular_layout(self.G)
 		family, social, ess_ess, ess_non, non_non = [], [], [], [], []
 		for i, j in self.G.edges:
-			if G[i][j]['relation'] == 'family':
+			if self.G[i][j]['relation'] == 'family':
 				family.append((i, j))
-			if G[i][j]['relation'] == 'social':
+			if self.G[i][j]['relation'] == 'social':
 				social.append((i, j))
-			if G[i][j]['relation'] == 'essential':
+			if self.G[i][j]['relation'] == 'ess_ess':
 				ess_ess.append((i, j))
-			if G[i][j]['relation'] == 'ess_non':
+			if self.G[i][j]['relation'] == 'ess_non':
 				ess_non.append((i, j))
-			if G[i][j]['relation'] == 'work':
+			if self.G[i][j]['relation'] == 'non_non':
 				non_non.append((i, j))
-		nx.draw(G, pos, with_labels=True, font_weight='bold', node_size=200)
+		nx.draw(self.G, pos, with_labels=True, font_weight='bold', node_size=200)
 		nx.draw_networkx_edges(G=self.G, pos=pos, width=2.0,
 		                       edgelist=family, edge_color='green')
 		nx.draw_networkx_edges(G=self.G, pos=pos, edgelist=ess_ess, edge_color='red')
