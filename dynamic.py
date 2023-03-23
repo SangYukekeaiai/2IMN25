@@ -4,9 +4,18 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import collections
+import math as m
+from scipy.stats import truncnorm
+
+def get_truncated_normal(mean=0, sd=1, low=0, upp=10):
+        return truncnorm((low - mean) / sd, (upp - mean) / sd, loc=mean, scale=sd)
+
 
 class Dynamic():
+
+    
     def __init__(self, G, immune_time, infect_rate, infect_time, death_rate, death_time, recover_time, begin_infected_number, allowed_measures):
+        
         self.G = G
         self.immune_time = immune_time
         self.infect_rate = infect_rate
@@ -17,7 +26,17 @@ class Dynamic():
         self.begin_infected_number = begin_infected_number
         self.allowed_measures = allowed_measures
 
-
+    def rand_immune_times(self,times):
+        immune_t = get_truncated_normal(mean=self.immune_time, sd=2, low=max(1,self.immune_time-5), upp = max(self.immune_time,self.immune_time+5))
+        vals = immune_t.rvs(times)
+        print(vals)
+        return vals
+        
+    def rand_infect_times(self,times):
+        infect_t = get_truncated_normal(mean=10, sd=2, low=7, upp = self.infect_time)
+        vals = infect_t.rvs(times)
+        return vals
+    
     def init_Graph_state(self):
         infected = set(random.sample(
             self.G.nodes(), self.begin_infected_number))
@@ -126,7 +145,13 @@ class Dynamic():
         self.infected_num_list = []
         self.healthy_num_list = []
         self.time_list = []
+        self
+        immune_times = self.rand_immune_times(times)
+        infect_times = self.rand_infect_times(times)
+        
         for i in range(times):
+            self.immune_time = m.ceil(immune_times[i])
+            self.infect_time = m.ceil(infect_times[i])
             self.dayrun()
             recover_num, healthy_num, death_num, infected_num = self.record_print()
             self.death_num_list.append(death_num)

@@ -4,13 +4,17 @@ from dynamic import Dynamic
 from generate_network import Social_Net
 import time
 
+
+
+
 SN = Social_Net(complete_net=False)
 SN.set_parameters(ba_degree=2, social_prob=0.025, rand_degree=25)
 SN.start_network(5000)
 G = SN.return_graph()
-# SN.draw_graph()
+
 measures = {"limit_social" : ['ess_non'], "No" : None}
-spread = Dynamic(G=G, immune_time=5, infect_rate=0.2, infect_time=14, death_rate=0.01, death_time=14, recover_time=14, begin_infected_number=50, allowed_measures = measures["No"])
+
+spread = Dynamic(G=G, immune_time=5, infect_rate=0.05, infect_time=14, death_rate=0.01, death_time=14, recover_time=14, begin_infected_number=5, allowed_measures = measures["No"])
 
 spread.init_Graph_state()
 
@@ -19,4 +23,4 @@ spread.init_Graph_state()
 #     spread.dayrun()
 #     spread.record_print()
 
-spread.draw_distribution(500)
+spread.draw_distribution(200)
