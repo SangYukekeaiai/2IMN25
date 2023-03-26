@@ -11,7 +11,7 @@ G = SN.get_graph()
 #SN.draw_graph()
 # SN.draw_graph()
 measures = {"limit_social" : ['ess_non', 'ess_ess'], "No" : None}
-spread = Dynamic(G=G, immune_time=180, infect_rate=0.05, infect_time=14, death_rate=0.05, lockdown_start=20, lockdown_stop=40, begin_infected_number=5, allowed_measures=measures["limit_social"])
+spread = Dynamic(G=G, immune_time=180, infect_rate=0.05, infect_time=14, death_rate=0.05, lockdown_start=20, lockdown_stop=60, begin_infected_number=5, allowed_measures=measures["No"])
 
 spread.init_Graph_state()
 
@@ -20,4 +20,4 @@ spread.init_Graph_state()
 #     spread.dayrun()
 #     spread.record_print()
 
-spread.draw_distribution(1000)
+spread.draw_distribution(200)
