@@ -4,8 +4,10 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import collections
+import statistics as stat
 
-class Dynamic():
+class Dynamic():  
+
     def __init__(self, G, immune_time, infect_rate, infect_time, death_rate, lockdown_start, lockdown_stop, begin_infected_number, allowed_measures):
         self.G = G
         self.immune_time = immune_time
@@ -27,7 +29,6 @@ class Dynamic():
         probs = 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((x - mu) / sigma)**2)
         probs /= np.sum(probs)
         self.to_be_infected_list = list(probs)
-
 
 
     def init_Graph_state(self):
@@ -152,18 +153,16 @@ class Dynamic():
             self.time_list.append(i)
             self.time = i
         fig, ax = plt.subplots()
-        ax.plot(self.time_list, self.death_num_list, label='death')
-        ax.plot(self.time_list, self.recovered_num_list, label='immune')
-        ax.plot(self.time_list, self.infected_num_list, label='infected')
-        ax.plot(self.time_list, self.healthy_num_list, label='healthy')
+        ax.plot(self.time_list, self.death_num_list, label='death', color='b')
+        ax.plot(self.time_list, self.recovered_num_list, label='recovered', color='y')
+        ax.plot(self.time_list, self.infected_num_list, label='infected', color='g')
+        ax.plot(self.time_list, self.healthy_num_list, label='healthy', color='r')
         ax.legend()
         plt.xlabel("Days")
         plt.ylabel("number of people")
-        plt.savefig('figure.png', dpi=500)
-        plt.close()
+        plt.savefig('single_run.png', dpi=500)
+        plt.close() 
         
-        
-
 
     def dayrun(self):
         self.updat_time()
@@ -172,5 +171,66 @@ class Dynamic():
         self.quit_immune()
         self.be_infected()
         self.infaction()
+    
+    def avg_std(self, times,cumdict):
+        #print(cumdict)
+        avgdict = {'healthy':[0 for i in range(times)], 'recovered':[0 for i in range(times)], 'infected':[0 for i in range(times)], 'death':[0 for i in range(times)]}
+        stdevdict = {'healthy':[0 for i in range(times)], 'recovered':[0 for i in range(times)], 'infected':[0 for i in range(times)], 'death':[0 for i in range(times)]}
+        
 
+        for k in cumdict.keys():
+            for ind in range(times):
+                avgdict[k][ind] = stat.mean(cumdict[k][ind])
+                stdevdict[k][ind] = stat.stdev(cumdict[k][ind])
+
+        self.draw_fill_graph(times, avgdict, stdevdict)
+        
+    def draw_fill_graph(self, times, avgdict, stdevdict):
+        #print(avgdict)
+        #print(stdevdict)
+        x = [i+1 for i in range(times)]
+        fig,ax = plt.subplots()
+        ax.plot(x, avgdict['healthy'], 'r',linewidth=0.5)
+        ax.plot(x, avgdict['infected'], 'g', linewidth=0.5)
+        ax.plot(x, avgdict['recovered'], 'y', linewidth=0.5)
+        ax.plot(x, avgdict['death'], 'b', linewidth=0.5)
+        ax.fill_between(x, [b-a for a,b in zip(stdevdict['healthy'], avgdict['healthy'])], [b+a for a,b in zip(stdevdict['healthy'], avgdict['healthy'])], color='r', alpha=0.1)
+        ax.fill_between(x, [b-a for a,b in zip(stdevdict['infected'], avgdict['infected'])], [b+a for a,b in zip(stdevdict['infected'], avgdict['infected'])], color='g', alpha=0.1)
+        ax.fill_between(x, [b-a for a,b in zip(stdevdict['recovered'], avgdict['recovered'])], [b+a for a,b in zip(stdevdict['recovered'], avgdict['recovered'])], color='y', alpha=0.1)
+        ax.fill_between(x, [b-a for a,b in zip(stdevdict['death'], avgdict['death'])], [b+a for a,b in zip(stdevdict['death'], avgdict['death'])], color='b', alpha=0.1)
+        ax.legend(['healthy', 'infected', 'recovered', 'death'], loc='best', fontsize='x-small')
+        ax.legend()
+        plt.xticks(fontsize='x-small')
+        plt.yticks(fontsize='x-small')
+        plt.xlabel("Days")
+        plt.ylabel("number of people")
+        plt.savefig('many_run.png', dpi=500)
+        plt.close()
+
+    def many_dayrun(self, times):
+        #death_num_dict = {}
+        #recovered_num_dict = {}
+        #infected_num_dict = {}
+        #healthy_num_dict = {}
+        #time_dict = {}
+        #cumdict = {'healthy':[[] for i in range(times)], 'recovered':[[] for i in range(times)], 'infected':[[] for i in range(times)], 'death':[[] for i in range(times)]}
+        
+        all_vals = {}
+        self.death_num_list = []
+        self.recovered_num_list = []
+        self.infected_num_list = []
+        self.healthy_num_list = []
+        self.time_list = []
+        for i in range(times):
+                self.dayrun()
+                recover_num, healthy_num, death_num, infected_num = self.record_print()
+                self.death_num_list.append(death_num)
+                self.recovered_num_list.append(recover_num)
+                self.infected_num_list.append(infected_num)
+                self.healthy_num_list.append(healthy_num)
+                self.time_list.append(i)
+                self.time = i
+            
+        all_vals = {'infected':self.infected_num_list, 'healthy':self.healthy_num_list, 'death': self.death_num_list, 'recovered':self.recovered_num_list}
+        return all_vals
 
