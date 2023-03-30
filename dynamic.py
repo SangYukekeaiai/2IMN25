@@ -173,7 +173,6 @@ class Dynamic():
         self.infaction()
     
     def avg_std(self, times,cumdict):
-        #print(cumdict)
         avgdict = {'healthy':[0 for i in range(times)], 'recovered':[0 for i in range(times)], 'infected':[0 for i in range(times)], 'death':[0 for i in range(times)]}
         stdevdict = {'healthy':[0 for i in range(times)], 'recovered':[0 for i in range(times)], 'infected':[0 for i in range(times)], 'death':[0 for i in range(times)]}
         
@@ -186,8 +185,6 @@ class Dynamic():
         self.draw_fill_graph(times, avgdict, stdevdict)
         
     def draw_fill_graph(self, times, avgdict, stdevdict):
-        #print(avgdict)
-        #print(stdevdict)
         x = [i+1 for i in range(times)]
         fig,ax = plt.subplots()
         ax.plot(x, avgdict['healthy'], 'r', linewidth=0.5, label='healthy')
@@ -208,12 +205,6 @@ class Dynamic():
         plt.close()
 
     def many_dayrun(self, times):
-        #death_num_dict = {}
-        #recovered_num_dict = {}
-        #infected_num_dict = {}
-        #healthy_num_dict = {}
-        #time_dict = {}
-        #cumdict = {'healthy':[[] for i in range(times)], 'recovered':[[] for i in range(times)], 'infected':[[] for i in range(times)], 'death':[[] for i in range(times)]}
         
         all_vals = {}
         self.death_num_list = []
