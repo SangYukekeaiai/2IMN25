@@ -199,6 +199,9 @@ class Social_Network():
         social = [0]
         family = [0]
         degree = sorted(G.degree, key=lambda x: x[1], reverse=True)
+        # print(degree)
+        for i, j in self.G.edges:
+            G.add_edge(i,j,is_counted=False)
         for neighbor in G.neighbors(degree[0][0]):
             n = degree[0][0]
             if self.G[n][neighbor]['relation'] == 'family':
@@ -215,16 +218,21 @@ class Social_Network():
             if degree[node][1] == degree[node - 1][1]:
                 for neighbor in G.neighbors(degree[node][0]):
                     n = degree[node][0]
-                    if self.G[n][neighbor]['relation'] == 'family':
+                    if self.G[n][neighbor]['relation'] == 'family' and self.G[n][neighbor]['is_counted'] == False:
                         family[-1] += 1
-                    if self.G[n][neighbor]['relation'] == 'social':
+                        self.G[n][neighbor]['is_counted'] = True
+                    if self.G[n][neighbor]['relation'] == 'social' and self.G[n][neighbor]['is_counted'] == False:
                         social[-1] += 1
-                    if self.G[n][neighbor]['relation'] == 'ess_ess':
+                        self.G[n][neighbor]['is_counted'] = True
+                    if self.G[n][neighbor]['relation'] == 'ess_ess' and self.G[n][neighbor]['is_counted'] == False:
                         ess_ess[-1] += 1
-                    if self.G[n][neighbor]['relation'] == 'ess_non':
+                        self.G[n][neighbor]['is_counted'] = True
+                    if self.G[n][neighbor]['relation'] == 'ess_non' and self.G[n][neighbor]['is_counted'] == False:
                         ess_non[-1] += 1
-                    if self.G[n][neighbor]['relation'] == 'non_non':
+                        self.G[n][neighbor]['is_counted'] = True
+                    if self.G[n][neighbor]['relation'] == 'non_non' and self.G[n][neighbor]['is_counted'] == False:
                         non_non[-1] += 1
+                        self.G[n][neighbor]['is_counted'] = True
             else:
                 family.append(0)
                 social.append(0)
@@ -234,16 +242,22 @@ class Social_Network():
                 total.append(degree[node][1])
                 for neighbor in G.neighbors(degree[node][0]):
                     n = degree[node][0]
-                    if self.G[n][neighbor]['relation'] == 'family':
+                    if self.G[n][neighbor]['relation'] == 'family' and self.G[n][neighbor]['is_counted'] == False:
                         family[-1] += 1
-                    if self.G[n][neighbor]['relation'] == 'social':
+                        self.G[n][neighbor]['is_counted'] = True
+                    if self.G[n][neighbor]['relation'] == 'social' and self.G[n][neighbor]['is_counted'] == False:
                         social[-1] += 1
-                    if self.G[n][neighbor]['relation'] == 'ess_ess':
+                        self.G[n][neighbor]['is_counted'] = True
+                    if self.G[n][neighbor]['relation'] == 'ess_ess' and self.G[n][neighbor]['is_counted'] == False:
                         ess_ess[-1] += 1
-                    if self.G[n][neighbor]['relation'] == 'ess_non':
+                        self.G[n][neighbor]['is_counted'] = True
+                    if self.G[n][neighbor]['relation'] == 'ess_non' and self.G[n][neighbor]['is_counted'] == False:
                         ess_non[-1] += 1
-                    if self.G[n][neighbor]['relation'] == 'non_non':
+                        self.G[n][neighbor]['is_counted'] = True
+                    if self.G[n][neighbor]['relation'] == 'non_non' and self.G[n][neighbor]['is_counted'] == False:
                         non_non[-1] += 1
+                        self.G[n][neighbor]['is_counted'] = True
+        # print()
         categories = {"family": family,
                       "ess_ess": ess_ess,
                       "ess_non": ess_non,
@@ -251,30 +265,32 @@ class Social_Network():
                       "social": social}
         fig, ax = plt.subplots()
         bottom = np.zeros(len(total))
-
+        # print(family)
         for boolean, content in categories.items():
             p = ax.bar(total, content, label = boolean, bottom=bottom)
             bottom += content
         plt.title("Degree Histogram")
         plt.ylabel("Count")
         plt.xlabel("Degree")
-        ax.set_xticks([d + 0.4 for d in total])
-        ax.set_xticklabels(total)
+        # ax.set_xticks([d + 0.4 for d in total])
+        # ax.set_xticklabels(total)
         ax.legend(loc="upper right")
-        plt.show()
-        # degree_sequence = sorted([d for n, d in G.degree()],
-        #                          reverse=True)  # degree sequence
-        # #print "Degree sequence", degree_sequence
-        # degreeCount = collections.Counter(degree_sequence)
-        # degreeCount = sorted(degreeCount.items())
-        # # print(type(degreeCount))
-        # deg, cnt = zip(*degreeCount)
+        plt.savefig("stack bar chart", dpi=500)
+        plt.close()
+        # print(G.degree())
+        degree_sequence = sorted([d for n, d in G.degree()],
+                                 reverse=True)  # degree sequence
+        #print "Degree sequence", degree_sequence
+        degreeCount = collections.Counter(degree_sequence)
+        degreeCount = sorted(degreeCount.items())
+        # print(type(degreeCount))
+        deg, cnt = zip(*degreeCount)
         # print('deg', deg)
         # print("number of degree more than 100:", sum(i > 100 for i in deg))
         # print('cnt', cnt)
 
-        # fig, ax = plt.subplots()
-        # plt.bar(deg, cnt)
+        fig, ax = plt.subplots()
+        plt.bar(deg, cnt, label = 'number of node')
 
         plt.title("Degree Histogram")
         plt.ylabel("Count")
@@ -282,26 +298,26 @@ class Social_Network():
         ax.set_xticks([d + 0.4 for d in total])
         ax.set_xticklabels(total)
         ax.legend(loc="upper right")
-        # plt.savefig(hist_file, dpi=500)
-        # plt.close()
+        plt.savefig(hist_file, dpi=500)
+        plt.close()
 
-        # if loglog_file:
-        #     fig, ax = plt.subplots()
-        #     #plt.loglog(deg, cnt)
-        #     plt.plot(deg, cnt, 'ko', markersize=2)
-        #     ax.set_xscale('log')
-        #     ax.set_yscale('log')
-        #     plt.title("Degree loglog plot")
-        #     plt.ylabel("P(k)")
-        #     plt.xlabel("Degree (k)")
-        #     plt.savefig(loglog_file, dpi=500)
-        #     plt.close()
+        if loglog_file:
+            fig, ax = plt.subplots()
+            #plt.loglog(deg, cnt)
+            plt.plot(deg, cnt, 'ko', markersize=2)
+            ax.set_xscale('log')
+            ax.set_yscale('log')
+            plt.title("Degree loglog plot")
+            plt.ylabel("P(k)")
+            plt.xlabel("Degree (k)")
+            plt.savefig(loglog_file, dpi=500)
+            plt.close()
 
 
 if __name__ == '__main__':
     My = Social_Network(complete=False)
-    My.set_parameters(ba_degree=3, social_prob=0.0025, rand_degree=15)
-    My.setup_network(10000)
+    My.set_parameters(ba_degree=3, social_prob=0.0025, rand_degree=10)
+    My.setup_network(100)
     # G = My.return_graph()
     # My.draw_graph()
     # nx.write_graphml(G, 'tenk_net.graphml')
