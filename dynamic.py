@@ -172,7 +172,7 @@ class Dynamic():
         self.be_infected()
         self.infaction()
     
-    def avg_std(self, times,cumdict):
+    def avg_std(self, times,cumdict, measure_type):
         avgdict = {'healthy':[0 for i in range(times)], 'recovered':[0 for i in range(times)], 'infected':[0 for i in range(times)], 'death':[0 for i in range(times)]}
         stdevdict = {'healthy':[0 for i in range(times)], 'recovered':[0 for i in range(times)], 'infected':[0 for i in range(times)], 'death':[0 for i in range(times)]}
         
@@ -182,9 +182,9 @@ class Dynamic():
                 avgdict[k][ind] = stat.mean(cumdict[k][ind])
                 stdevdict[k][ind] = stat.stdev(cumdict[k][ind])
 
-        self.draw_fill_graph(times, avgdict, stdevdict)
-        
-    def draw_fill_graph(self, times, avgdict, stdevdict):
+        self.draw_fill_graph(times, avgdict, stdevdict, measure_type)
+
+    def draw_fill_graph(self, times, avgdict, stdevdict, measure_type):
         x = [i+1 for i in range(times)]
         fig,ax = plt.subplots()
         ax.plot(x, avgdict['healthy'], 'r', linewidth=0.5, label='healthy')
@@ -201,7 +201,7 @@ class Dynamic():
         plt.yticks(fontsize='x-small')
         plt.xlabel("Days")
         plt.ylabel("number of people")
-        plt.savefig('many_run.png', dpi=500)
+        plt.savefig('many_run'+measure_type+'.png', dpi=500)
         plt.close()
 
     def many_dayrun(self, times):

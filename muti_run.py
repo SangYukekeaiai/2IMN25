@@ -39,4 +39,4 @@ for i in range(num_graphs):
                 for ind in range(times):
                     cumdict[k][ind].append(data[k][ind])
     
-spread.avg_std(times,cumdict)
+spread.avg_std(times, cumdict, allowed_measures)
