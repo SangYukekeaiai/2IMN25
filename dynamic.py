@@ -8,11 +8,9 @@ import statistics as stat
 
 class Dynamic():  
 
-    def __init__(self, G, immune_time, infect_rate, infect_time, death_rate, lockdown_start, lockdown_stop, begin_infected_number, allowed_measures):
+    def __init__(self, G, infect_rate, death_rate, lockdown, lockdown_start, lockdown_stop, begin_infected_number, allowed_measures):
         self.G = G
-        self.immune_time = immune_time
         self.infect_rate = infect_rate
-        self.infect_time = infect_time
         self.death_rate = death_rate
         self.lockdown_stop = lockdown_stop
         self.lockdown_start = lockdown_start
@@ -21,6 +19,7 @@ class Dynamic():
         self.recover_list = [0.0002, 0.0005, 0.0009, 0.0016, 0.0028, 0.0047, 0.0076, 0.0117, 0.0173, 0.0245, 0.0332, 0.0431, 0.0536, 0.0637, 0.0726, 0.0792, 0.0828, 0.0827, 0.0792, 0.0726, 0.0637, 0.0536, 0.0431, 0.0332, 0.0245, 0.0173, 0.0117, 0.0076, 0.0047, 0.0028, 0.0016, 0.0009, 0.0005, 0.0002, 0.0001]
         self.allowed_measures = allowed_measures
         self.time = 0
+        self.lockdown = lockdown
 
         #Infection distribution
         mu = 5.6
@@ -82,9 +81,9 @@ class Dynamic():
                 victim_list = []
                 for neighbor in list(self.G.neighbors(node)):
                     if self.G.nodes[neighbor]['status'] == 'healthy' and self.G.nodes[neighbor]['future'] == 'healthy':
-                        if self.time >self.lockdown_start and self.time<self.lockdown_stop:
+                        if self.time >self.lockdown_start and self.time<self.lockdown_stop and self.lockdown == True:
                             if self.G[node][neighbor]['relation'] in self.allowed_measures:
-                                victim_list.append(neighbor)                          
+                                victim_list.append(neighbor)                        
                         else:
                             victim_list.append(neighbor)
                 destiny = np.random.binomial(1, self.infect_rate, len(victim_list))
@@ -168,6 +167,9 @@ class Dynamic():
         ax.plot(self.time_list, self.recovered_num_list, label='recovered', color='y')
         ax.plot(self.time_list, self.infected_num_list, label='infected', color='g')
         ax.plot(self.time_list, self.healthy_num_list, label='healthy', color='r')
+        if self.lockdown == True:
+            ax.vlines(x=self.lockdown_start, ymin=0, ymax=10000, color='k', linestyle = '--', label='lockdown start')
+            ax.vlines(x=self.lockdown_stop, ymin=0, ymax=10000, color='k', linestyle = '--', label='lockdown stop')
         ax.legend()
         plt.xlabel("Days")
         plt.ylabel("number of people")
@@ -206,6 +208,9 @@ class Dynamic():
         ax.fill_between(x, [b-a for a,b in zip(stdevdict['infected'], avgdict['infected'])], [b+a for a,b in zip(stdevdict['infected'], avgdict['infected'])], color='g', alpha=0.1)
         ax.fill_between(x, [b-a for a,b in zip(stdevdict['recovered'], avgdict['recovered'])], [b+a for a,b in zip(stdevdict['recovered'], avgdict['recovered'])], color='y', alpha=0.1)
         ax.fill_between(x, [b-a for a,b in zip(stdevdict['death'], avgdict['death'])], [b+a for a,b in zip(stdevdict['death'], avgdict['death'])], color='b', alpha=0.1)
+        if self.lockdown == True:
+            ax.vlines(x=self.lockdown_start, ymin=0, ymax=10000, color='k', linestyle = '--', label='lockdown: '+str(self.lockdown_start)+ "-" +str(self.lockdown_stop), linewidth=1)
+            ax.vlines(x=self.lockdown_stop, ymin=0, ymax=10000, color='k', linestyle = '--', linewidth=1)
         ax.legend(['healthy', 'infected', 'recovered', 'death'], loc='best', fontsize='x-small')
         ax.legend()
         plt.xticks(fontsize='x-small')

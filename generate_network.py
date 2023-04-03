@@ -107,7 +107,7 @@ class Social_Network():
             self.G[i][j]['relation'] = 'social'
             socG.add_edge(i, j)
 
-    def set_parameters(self, family_sizes=[0.3, 0.35, 0.18, 0.17], workrate=0.7, essential=0.2, ba_degree=3, essential_connection=0.6, interaction_prob=0.20, social_prob=0.001, rand_degree=5):
+    def set_parameters(self, family_sizes=[0.3, 0.35, 0.18, 0.17], workrate=0.6, essential=0.2, ba_degree=2, essential_connection=0.6, interaction_prob=0.20, social_prob=0.001, rand_degree=5):
         self.workrate = workrate
         self.essential = essential
         self.family_sizes = family_sizes
