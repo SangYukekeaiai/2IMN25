@@ -21,6 +21,8 @@ class Dynamic():
         self.recover_list = [0.0002, 0.0005, 0.0009, 0.0016, 0.0028, 0.0047, 0.0076, 0.0117, 0.0173, 0.0245, 0.0332, 0.0431, 0.0536, 0.0637, 0.0726, 0.0792, 0.0828, 0.0827, 0.0792, 0.0726, 0.0637, 0.0536, 0.0431, 0.0332, 0.0245, 0.0173, 0.0117, 0.0076, 0.0047, 0.0028, 0.0016, 0.0009, 0.0005, 0.0002, 0.0001]
         self.allowed_measures = allowed_measures
         self.time = 0
+
+        #Infection distribution
         mu = 5.6
         sigma = (14 - 2) / 6
 
@@ -29,6 +31,15 @@ class Dynamic():
         probs = 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((x - mu) / sigma)**2)
         probs /= np.sum(probs)
         self.to_be_infected_list = list(probs)
+
+        #immunity distribution
+        mu1 = 16*30
+        sigma1 = 10 *30
+
+        x1 = np.arange(90, 63*30)
+        probs1 = 1 / (sigma1 * np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((x1 - mu1) / sigma1)**2)
+        probs1 /= np.sum(probs1)
+        self.immune_list = list(probs1)
 
 
     def init_Graph_state(self):
@@ -63,7 +74,7 @@ class Dynamic():
                     self.G.nodes[node]['future'] == 'immune' and self.G.nodes[node]['day_to_change_state'] == 0):
                 self.G.nodes[node]['status'] = 'immune'
                 self.G.nodes[node]['future'] = 'healthy'
-                self.G.nodes[node]['day_to_change_state'] = self.immune_time
+                self.G.nodes[node]['day_to_change_state'] = np.random.choice(np.arange(90, 63*30), p = self.immune_list)
 
     def infaction(self):
         for node in self.G.__iter__():
@@ -72,8 +83,8 @@ class Dynamic():
                 for neighbor in list(self.G.neighbors(node)):
                     if self.G.nodes[neighbor]['status'] == 'healthy' and self.G.nodes[neighbor]['future'] == 'healthy':
                         if self.time >self.lockdown_start and self.time<self.lockdown_stop:
-                            if self.G[node][neighbor]['relation'] == self.allowed_measures:
-                                victim_list.append(neighbor)                            
+                            if self.G[node][neighbor]['relation'] in self.allowed_measures:
+                                victim_list.append(neighbor)                          
                         else:
                             victim_list.append(neighbor)
                 destiny = np.random.binomial(1, self.infect_rate, len(victim_list))
